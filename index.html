@@ -122,11 +122,11 @@
       const today = new Date().toDateString();
       const lastSpin = localStorage.getItem("lastSpinDate");
 
-      //   if (lastSpin === today) {
-      //     spinButton.disabled = true;
-      //     result.textContent =
-      //       "You have already spin the wheel today! Come back tomorrow.";
-      //   }
+      if (lastSpin === today) {
+        spinButton.disabled = true;
+        result.textContent =
+          "You have already spin the wheel today! Come back tomorrow.";
+      }
 
       spinButton.addEventListener("click", () => {
         const userName = userNameInput.value.trim();
