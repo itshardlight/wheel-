@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Spin the Wheel</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        text-align: center;
+        padding: 20px;
+        background-color: #f0f8ff;
+      }
+      .wheel {
+        width: 300px;
+        height: 300px;
+        border: 10px solid #333;
+        border-radius: 50%;
+        margin: 20px auto;
+        position: relative;
+      }
+      .wheel div {
+        position: absolute;
+        width: 50%;
+        height: 50%;
+        background-color: #ff6f61;
+        transform-origin: 100% 100%;
+        clip-path: polygon(0 0, 100% 0, 100% 100%);
+      }
+      .wheel div:nth-child(1) {
+        transform: rotate(0deg);
+        background-color: #ff6f61;
+      }
+      .wheel div:nth-child(2) {
+        transform: rotate(60deg);
+        background-color: #ffcc00;
+      }
+      .wheel div:nth-child(3) {
+        transform: rotate(120deg);
+        background-color: #6bc4a2;
+      }
+      .wheel div:nth-child(4) {
+        transform: rotate(180deg);
+        background-color: #4f8adf;
+      }
+      .wheel div:nth-child(5) {
+        transform: rotate(240deg);
+        background-color: #9a6dd7;
+      }
+      .wheel div:nth-child(6) {
+        transform: rotate(300deg);
+        background-color: #f16aa1;
+      }
+
+      #pointer {
+        width: 0;
+        height: 0;
+        border-left: 10px solid transparent;
+        border-right: 10px solid transparent;
+        border-bottom: 20px solid #333;
+        margin: 0 auto;
+      }
+      #spin-button {
+        padding: 10px 20px;
+        font-size: 18px;
+        background-color: #4caf50;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        margin: 10px;
+      }
+      #spin-button:disabled {
+        background-color: #aaa;
+        cursor: not-allowed;
+      }
+      #result,
+      #bonus-result {
+        margin-top: 20px;
+        font-size: 20px;
+        font-weight: bold;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Spin the Wheel</h1>
+    <input type="text" id="user-name" placeholder="Enter your name" />
+    <div id="pointer"></div>
+    <div class="wheel" id="wheel">
+      <div></div>
+      <div></div>
+      <div></div>
+      <div></div>
+      <div></div>
+      <div></div>
+    </div>
+    <input
+      type="number"
+      id="deposit-amount"
+      placeholder="Enter deposit amount"
+    />
+    <button id="spin-button">Spin</button>
+    <div id="result"></div>
+    <div id="bonus-result"></div>
+
+    <script>
+      const spinButton = document.getElementById("spin-button");
+      const wheel = document.getElementById("wheel");
+      const result = document.getElementById("result");
+      const bonusResult = document.getElementById("bonus-result");
+      const depositInput = document.getElementById("deposit-amount");
+      const userNameInput = document.getElementById("user-name");
+
+      const sections = [
+        "Prize 1",
+        "Prize 2",
+        "Prize 3",
+        "Prize 4",
+        "Prize 5",
+        "Prize 6",
+      ];
+      const today = new Date().toDateString();
+      const lastSpin = localStorage.getItem("lastSpinDate");
+
+      //   if (lastSpin === today) {
+      //     spinButton.disabled = true;
+      //     result.textContent =
+      //       "You have already spin the wheel today! Come back tomorrow.";
+      //   }
+
+      spinButton.addEventListener("click", () => {
+        const userName = userNameInput.value.trim();
+        const depositAmount = parseFloat(depositInput.value);
+
+        if (!userName) {
+          result.textContent = "Please enter your name.";
+          return;
+        }
+
+        if (isNaN(depositAmount) || depositAmount <= 0) {
+          bonusResult.textContent = "Please enter a valid deposit amount.";
+          return;
+        }
+
+        let bonusPercentage = 0;
+        if (depositAmount >= 1 && depositAmount <= 5) {
+          bonusPercentage = 30;
+        } else if (depositAmount >= 6 && depositAmount <= 10) {
+          bonusPercentage = 20;
+        } else if (depositAmount > 10) {
+          bonusPercentage = 10;
+        }
+
+        const bonusAmount = (depositAmount * bonusPercentage) / 100;
+        const totalAmount = depositAmount + bonusAmount;
+
+        const randomIndex = Math.floor(Math.random() * sections.length);
+        const angle = 360 * 3 + randomIndex * (360 / sections.length);
+
+        wheel.style.transition = "transform 3s ease-out";
+        wheel.style.transform = `rotate(${angle}deg)`;
+
+        setTimeout(() => {
+          const prize = sections[randomIndex];
+          result.textContent = `Congratulations, ${userName}! You won ${bonusPercentage}%!`;
+          bonusResult.textContent = `Deposit: $${depositAmount.toFixed(
+            2
+          )}, Bonus: $${bonusAmount.toFixed(2)}, Total: $${totalAmount.toFixed(
+            2
+          )}`;
+          localStorage.setItem("lastSpinDate", today);
+          spinButton.disabled = true;
+        }, 3000);
+      });
+    </script>
+  </body>
+</html>
