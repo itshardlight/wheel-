@@ -104,6 +104,27 @@
     <div id="bonus-result"></div>
 
     <script>
+      // Function to set a cookie
+      function setCookie(name, value, days) {
+        const date = new Date();
+        date.setTime(date.getTime() + days * 24 * 60 * 60 * 1000);
+        const expires = "expires=" + date.toUTCString();
+        document.cookie = `${name}=${value}; ${expires}; path=/`;
+      }
+
+      // Function to get a cookie value
+      function getCookie(name) {
+        const nameEQ = name + "=";
+        const cookies = document.cookie.split("; ");
+        for (let i = 0; i < cookies.length; i++) {
+          const cookie = cookies[i];
+          if (cookie.indexOf(nameEQ) === 0) {
+            return cookie.substring(nameEQ.length, cookie.length);
+          }
+        }
+        return null;
+      }
+
       const spinButton = document.getElementById("spin-button");
       const wheel = document.getElementById("wheel");
       const result = document.getElementById("result");
@@ -120,12 +141,13 @@
         "Prize 6",
       ];
       const today = new Date().toDateString();
-      const lastSpin = localStorage.getItem("lastSpinDate");
+      const lastSpin = getCookie("lastSpinDate");
 
+      // Disable button if the user has already spun today
       if (lastSpin === today) {
         spinButton.disabled = true;
         result.textContent =
-          "You have already spin the wheel today! Come back tomorrow.";
+          "You have already spun the wheel today! Come back tomorrow.";
       }
 
       spinButton.addEventListener("click", () => {
@@ -168,7 +190,7 @@
           )}, Bonus: $${bonusAmount.toFixed(2)}, Total: $${totalAmount.toFixed(
             2
           )}`;
-          localStorage.setItem("lastSpinDate", today);
+          setCookie("lastSpinDate", today, 1); // Save the spin date for 1 day
           spinButton.disabled = true;
         }, 3000);
       });
